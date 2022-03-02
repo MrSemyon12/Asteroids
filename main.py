@@ -1,5 +1,6 @@
 import pygame, time, math
 from starship import Starship
+from asteroid import Asteroid
 
 # constants
 WINDOW_SIZE = (980, 980)
@@ -13,6 +14,7 @@ last_time = time.time()
 
 # entities
 player = Starship()
+asteroid1 = Asteroid(1)
 
 running = True
 while running:
@@ -22,6 +24,7 @@ while running:
 
     SCREEN.fill(BLACK) 
     player.draw(SCREEN)
+    asteroid1.draw(SCREEN)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
@@ -42,7 +45,7 @@ while running:
     if keys[pygame.K_a]:
         player.angle += 0.25
         player.angle %= 360 
-
+    
     player.update()    
     pygame.display.update()      
 
