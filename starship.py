@@ -5,9 +5,9 @@ class Starship:
     def __init__(self):        
         self.image = [pygame.image.load('data/starship.png'), pygame.image.load('data/starship_running.png')]     
         self.runnig = 0
-        self.x = 470
-        self.y = 470       
-        self.angle = 0
+        self.x = 430
+        self.y = 430       
+        self.angle = 0        
         self.dx = 0
         self.dy = 0
 
@@ -15,14 +15,14 @@ class Starship:
         self.x += self.dx
         self.y += self.dy
 
-        if (self.x > 980):
+        if (self.x > 860):
             self.x = 1
-        if (self.y > 980):
+        if (self.y > 860):
             self.y = 1
-        if (self.x <= 0):
-            self.x = 980
-        if (self.y <= 0):
-            self.y = 980
+        if (self.x < 1):
+            self.x = 860
+        if (self.y < 1):
+            self.y = 860
 
     def draw(self, screen):
         img_copy = pygame.transform.rotate(self.image[self.runnig], self.angle)
