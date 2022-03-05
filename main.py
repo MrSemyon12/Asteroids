@@ -7,9 +7,11 @@ WINDOW_SIZE = (860, 860)
 BLACK = (0, 0, 0)
 FPS = 60
 START_TIME = time.monotonic()
-T1_ASTEROID_SPAWN_PERIOD = 3
-T2_ASTEROID_SPAWN_PERIOD = 6
-T3_ASTEROID_SPAWN_PERIOD = 9
+T1_ASTEROID_SPAWN_PERIOD = 5
+T2_ASTEROID_SPAWN_PERIOD = 7
+T3_ASTEROID_SPAWN_PERIOD = 10
+ROTATING_SPEED = 0.25
+FLYING_SPEED = 0.01
 
 # screen preparation
 pygame.init()
@@ -26,9 +28,7 @@ running = True
 while running:
     dt = time.monotonic() - last_time    
     last_time = time.monotonic()
-
-    current_time = int(last_time - START_TIME + 1)
-    print(current_time)
+    current_time = int(last_time - START_TIME + 1)  
     
     if current_time % T2_ASTEROID_SPAWN_PERIOD == 0:
         if spawn:
@@ -57,13 +57,13 @@ while running:
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_w]:
-        player.dx += math.sin(math.radians(player.angle)) * -0.01 * dt * FPS
-        player.dy += math.cos(math.radians(player.angle)) * -0.01 * dt * FPS
+        player.dx += math.sin(math.radians(player.angle)) * -FLYING_SPEED * dt * FPS
+        player.dy += math.cos(math.radians(player.angle)) * -FLYING_SPEED * dt * FPS
     if keys[pygame.K_d]:
-        player.angle -= 0.25
+        player.angle -= ROTATING_SPEED
         player.angle %= 360
     if keys[pygame.K_a]:
-        player.angle += 0.25
+        player.angle += ROTATING_SPEED
         player.angle %= 360 
     
     player.update()   
