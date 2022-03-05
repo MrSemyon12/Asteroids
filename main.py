@@ -5,22 +5,41 @@ from asteroid import Asteroid
 # constants
 WINDOW_SIZE = (860, 860)
 BLACK = (0, 0, 0)
+FPS = 60
+START_TIME = time.monotonic()
+T1_ASTEROID_SPAWN_PERIOD = 3
+T2_ASTEROID_SPAWN_PERIOD = 6
+T3_ASTEROID_SPAWN_PERIOD = 9
 
-# screen settings
+# screen preparation
 pygame.init()
 SCREEN = pygame.display.set_mode(WINDOW_SIZE)
 pygame.display.set_caption('Asteroids')
-last_time = time.time()
+last_time = time.monotonic()
+spawn = True
 
 # entities
 player = Starship()
-asteroids = [Asteroid(1), Asteroid(2), Asteroid(1), Asteroid(2), Asteroid(1), Asteroid(2)]
+asteroids = []
 
 running = True
 while running:
-    dt = time.time() - last_time
-    dt *= 60
-    last_time = time.time()    
+    dt = time.monotonic() - last_time    
+    last_time = time.monotonic()
+
+    current_time = int(last_time - START_TIME + 1)
+    print(current_time)
+    
+    if current_time % T2_ASTEROID_SPAWN_PERIOD == 0:
+        if spawn:
+            asteroids.append(Asteroid(2))
+            spawn = False
+    elif current_time % T1_ASTEROID_SPAWN_PERIOD == 0:
+        if spawn:
+            asteroids.append(Asteroid(1))
+            spawn = False
+    else:
+        spawn = True    
 
     SCREEN.fill(BLACK) 
     player.draw(SCREEN)
@@ -38,8 +57,8 @@ while running:
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_w]:
-        player.dx += math.sin(math.radians(player.angle)) * -0.01 * dt
-        player.dy += math.cos(math.radians(player.angle)) * -0.01 * dt   
+        player.dx += math.sin(math.radians(player.angle)) * -0.01 * dt * FPS
+        player.dy += math.cos(math.radians(player.angle)) * -0.01 * dt * FPS
     if keys[pygame.K_d]:
         player.angle -= 0.25
         player.angle %= 360
@@ -50,6 +69,6 @@ while running:
     player.update()   
     for ast in asteroids:
         ast.update()
-    pygame.display.update()      
+    pygame.display.update()         
 
 pygame.quit()   
