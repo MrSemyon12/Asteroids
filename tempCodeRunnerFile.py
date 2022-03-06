@@ -1,1 +1,1 @@
-START_TIME = 0
+print(second)

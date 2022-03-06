@@ -1,13 +1,17 @@
 import pygame, math
+from constants import *
+
 
 class Laser:
     def __init__(self, x, y, angle):        
         self.image = pygame.image.load('data/laser.png')        
         self.x = x
-        self.y = y       
+        self.y = y   
+        self.mx = 0 
+        self.my = 0   
         self.angle = angle        
-        self.dx = math.sin(math.radians(angle)) * -1
-        self.dy = math.cos(math.radians(angle)) * -1
+        self.dx = 0
+        self.dy = 0
 
     def update(self):
         self.x += self.dx
