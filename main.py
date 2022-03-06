@@ -7,7 +7,8 @@ from constants import *
 # Setup pygame/window --------------------------------------------- #
 pygame.init()
 pygame.display.set_caption('Asteroids')
-screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
+window_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
+screen = pygame.display.set_mode(window_size, 0, 32)
 
 last_time = start_time = time.time()
 last_second = 0
@@ -17,7 +18,7 @@ spawn_laser = True
 running = True
 
 # Entities -------------------------------------------------------- #
-starship = Starship()
+starship = Starship(window_size)
 asteroids = []
 lasers = []
 
@@ -26,7 +27,7 @@ while running:
     current_time = time.time()
     dt = (current_time - last_time) * FPS   
     second = last_time - start_time + 1
-    msecond = int(math.modf(second)[0] * 10)
+    msecond = int(math.modf(second)[0] * 100)
     second = int(second)    
     last_time = current_time    
 
@@ -40,13 +41,13 @@ while running:
     
     if spawn_asteroid:
         if second % ASTEROID_T3_SPAWN_PERIOD == 0:            
-            asteroids.append(Asteroid(3))
+            asteroids.append(Asteroid(3, window_size))
             spawn_asteroid = False
         elif second % ASTEROID_T2_SPAWN_PERIOD == 0:            
-            asteroids.append(Asteroid(2))
+            asteroids.append(Asteroid(2, window_size))
             spawn_asteroid = False    
         elif second % ASTEROID_T1_SPAWN_PERIOD == 0:
-            asteroids.append(Asteroid(1))
+            asteroids.append(Asteroid(1, window_size))
             spawn_asteroid = False           
 
     screen.fill(BLACK)     
@@ -94,7 +95,7 @@ while running:
         las.dx = las.mx * dt
         las.dy = las.my * dt 
         las.update()
-        if (las.x > WINDOW_SIZE[0] or las.x < 0 or las.y > WINDOW_SIZE[1] or las.y < 0):
+        if (las.x > window_size[0] or las.x < 0 or las.y > window_size[1] or las.y < 0):
             lasers.remove(las)          
     starship.dx = starship.mx * dt
     starship.dy = starship.my * dt

@@ -1,4 +1,4 @@
-import pygame, math
+import pygame
 from constants import *
 
 
