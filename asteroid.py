@@ -7,7 +7,7 @@ image = [pygame.image.load('data/asteroid_t1.png'),
          pygame.image.load('data/asteroid_t3.png')]
 
 class Asteroid:
-    def __init__(self, tier, window_size):
+    def __init__(self, tier, window_size, x = 0, y = 0):
         self.tier = tier
         self.image = image[tier - 1]
         self.mask = pygame.mask.from_surface(self.image)
@@ -20,18 +20,22 @@ class Asteroid:
         self.min_x = int(-self.image.get_width() / 2)
         self.min_y = int(-self.image.get_height() / 2)
 
-        if (random.randint(0, 1)):
+        if x + y == 0:
             if (random.randint(0, 1)):
-                self.x = self.min_x                
+                if (random.randint(0, 1)):
+                    self.x = self.min_x                
+                else:
+                    self.x = self.max_x
+                self.y = random.randint(self.min_y, self.max_y)
             else:
-                self.x = self.max_x
-            self.y = random.randint(self.min_y, self.max_y)
+                if (random.randint(0, 1)):
+                    self.y = self.min_y                
+                else:
+                    self.y = self.max_y
+                self.x = random.randint(self.min_x, self.max_x)
         else:
-            if (random.randint(0, 1)):
-                self.y = self.min_y                
-            else:
-                self.y = self.max_y
-            self.x = random.randint(self.min_x, self.max_x)
+            self.x = x
+            self.y = y
               
         self.angle = random.randint(1, 180)
         self.dangle = 0
