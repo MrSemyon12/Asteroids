@@ -4,10 +4,12 @@ from asteroid import Asteroid
 from laser import Laser
 from constants import *
 
-# Setup pygame/window --------------------------------------------- #
+# Setup ----------------------------------------------------------- #
 pygame.init()
 pygame.display.set_caption('Asteroids')
-window_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
+#window_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
+#screen = pygame.display.set_mode(window_size, pygame.FULLSCREEN, 32)
+window_size = (800, 800)
 screen = pygame.display.set_mode(window_size, 0, 32)
 
 last_time = start_time = time.time()
@@ -57,6 +59,7 @@ while running:
         las.draw(screen)
     starship.draw(screen)
 
+    # Buttons ----------------------------------------------------- #
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             running = False          
@@ -85,22 +88,30 @@ while running:
                 lasers.append(laser)
                 spawn_laser = False            
             
-    # Update ------------------------------------------------------ #  
+    # Update and collide ------------------------------------------ #  
     for ast in asteroids:
         ast.dx = ast.mx * dt
         ast.dy = ast.my * dt
         ast.dangle = ast.mangle * dt        
         ast.update()
+        if starship.collide(ast.mask, ast.x, ast.y) != None:            
+            starship.health -= 1        
+
     for las in lasers:
         las.dx = las.mx * dt
         las.dy = las.my * dt 
         las.update()
-        if (las.x > window_size[0] or las.x < 0 or las.y > window_size[1] or las.y < 0):
-            lasers.remove(las)          
+        if (las.x > window_size[0] + 100 or las.x < -100 or las.y > window_size[1] + 100 or las.y < -100):
+            lasers.remove(las) 
+        for ast in asteroids:
+            if las.collide(ast.mask, ast.x, ast.y) != None:
+                asteroids.remove(ast)
+
     starship.dx = starship.mx * dt
     starship.dy = starship.my * dt
     starship.update()
-
+    
+    print(starship.health)
     pygame.display.update()    
 
 pygame.quit()

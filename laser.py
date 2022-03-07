@@ -13,6 +13,12 @@ class Laser:
         self.dx = 0
         self.dy = 0
 
+    def collide(self, mask, x, y):
+        laser_mask = pygame.mask.from_surface(self.image)
+        offset = (int(self.x - x), int(self.y - y))
+        is_collide = mask.overlap(laser_mask, offset)
+        return is_collide
+
     def update(self):
         self.x += self.dx
         self.y += self.dy        

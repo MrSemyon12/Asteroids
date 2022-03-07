@@ -4,7 +4,7 @@ from constants import *
 
 class Starship:
     def __init__(self, window_size):        
-        self.image = [pygame.image.load('data/starship.png'), pygame.image.load('data/starship_running.png')]     
+        self.image = [pygame.image.load('data/starship.png'), pygame.image.load('data/starship_running.png')]          
         self.runnig = 0
         self.x = window_size[0] // 2
         self.y = window_size[1] // 2         
@@ -15,6 +15,13 @@ class Starship:
         self.dy = 0
         self.max_x = window_size[0]
         self.max_y = window_size[1]
+        self.health = STARSHIP_BASE_HP        
+    
+    def collide(self, mask, x, y):
+        starship_mask = pygame.mask.from_surface(self.image[self.runnig])
+        offset = (int(self.x - x), int(self.y - y))
+        is_collide = mask.overlap(starship_mask, offset)
+        return is_collide
 
     def update(self):
         self.x += self.dx
