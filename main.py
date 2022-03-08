@@ -17,11 +17,11 @@ pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
 last_time = start_time = time.time()
 last_second = 0
 last_msecond = 0
-spawn_asteroid = True
-spawn_laser = True
-running = True
+spawn_asteroid = 1
+spawn_laser = 1
+running = 1
 hard_lvl = 1
-lvl_up = True
+lvl_up = 1
 
 # Images ---------------------------------------------------------- #
 asteroid_image = [pygame.image.load('data/asteroid_t1.png').convert_alpha(),
@@ -46,18 +46,18 @@ while running:
     last_time = current_time    
 
     if last_second != second:
-        spawn_asteroid = True
+        spawn_asteroid = 1
         last_second = second 
 
     if last_msecond != msecond:
-        spawn_laser = True
+        spawn_laser = 1
         last_msecond = msecond   
 
     if second % HARD_LVL_UP_PERIOD == 0:
         if lvl_up:
             hard_lvl += 1
-            lvl_up = False
-    else: lvl_up = True
+            lvl_up = 0
+    else: lvl_up = 1
     
     if spawn_asteroid:
         if second % ASTEROID_T3_SPAWN_PERIOD == 0:  
@@ -65,12 +65,12 @@ while running:
                 asteroids.append(Asteroid(3, window_size, asteroid_image))
                 asteroids.append(Asteroid(3, window_size, asteroid_image))
                 asteroids.append(Asteroid(3, window_size, asteroid_image))                
-            spawn_asteroid = False
+            spawn_asteroid = 0
         elif second % ASTEROID_T2_SPAWN_PERIOD == 0: 
             for i in range(hard_lvl):
                 asteroids.append(Asteroid(2, window_size, asteroid_image))
                 asteroids.append(Asteroid(2, window_size, asteroid_image))                           
-            spawn_asteroid = False                  
+            spawn_asteroid = 0                  
     
     # Drawing ----------------------------------------------------- #    
     screen.fill(BLACK)
@@ -83,7 +83,7 @@ while running:
     # Buttons ----------------------------------------------------- #
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-            running = False          
+            running = 0          
         if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
             starship.runnig = 1
         if event.type == pygame.KEYUP and event.key == pygame.K_w:
@@ -107,7 +107,7 @@ while running:
                 laser.mx = math.sin(math.radians(laser.angle)) * -1 * LASER_FLYING_SPEED
                 laser.my = math.cos(math.radians(laser.angle)) * -1 * LASER_FLYING_SPEED  
                 lasers.append(laser)
-                spawn_laser = False            
+                spawn_laser = 0            
             
     # Update and collide ------------------------------------------ #  
     for ast in asteroids:

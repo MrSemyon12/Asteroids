@@ -56,5 +56,5 @@ class Asteroid:
 
     def draw(self, screen):
         img_copy = pygame.transform.rotate(self.image, self.angle)
-        screen.blit(img_copy, (self.x - int(img_copy.get_width() / 2), self.y - int(img_copy.get_height() / 2)))        
+        screen.blit(img_copy, (self.x - int(img_copy.get_width() / 2), self.y - int(img_copy.get_height() / 2)))          
         
