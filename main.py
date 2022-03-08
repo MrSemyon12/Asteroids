@@ -8,7 +8,9 @@ from constants import *
 pygame.init()
 pygame.display.set_caption('Asteroids')
 window_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
-screen = pygame.display.set_mode(window_size, pygame.FULLSCREEN, 32)
+flags = pygame.FULLSCREEN | pygame.DOUBLEBUF
+screen = pygame.display.set_mode(window_size, flags, 8)
+pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
 #window_size = (800, 800)
 #screen = pygame.display.set_mode(window_size, 0, 32)
 
@@ -21,8 +23,16 @@ running = True
 hard_lvl = 1
 lvl_up = True
 
+# Images ---------------------------------------------------------- #
+asteroid_image = [pygame.image.load('data/asteroid_t1.png').convert_alpha(),
+                  pygame.image.load('data/asteroid_t2.png').convert_alpha(),
+                  pygame.image.load('data/asteroid_t3.png').convert_alpha()]
+starship_image = [pygame.image.load('data/starship.png').convert_alpha(), 
+                  pygame.image.load('data/starship_running.png').convert_alpha()]
+laser_image =     pygame.image.load('data/laser.png').convert_alpha()
+
 # Entities -------------------------------------------------------- #
-starship = Starship(window_size)
+starship = Starship(window_size, starship_image)
 asteroids = []
 lasers = []
 
@@ -52,22 +62,23 @@ while running:
     if spawn_asteroid:
         if second % ASTEROID_T3_SPAWN_PERIOD == 0:  
             for i in range(hard_lvl):          
-                asteroids.append(Asteroid(3, window_size))
-                asteroids.append(Asteroid(3, window_size))
-                asteroids.append(Asteroid(3, window_size))                
+                asteroids.append(Asteroid(3, window_size, asteroid_image))
+                asteroids.append(Asteroid(3, window_size, asteroid_image))
+                asteroids.append(Asteroid(3, window_size, asteroid_image))                
             spawn_asteroid = False
         elif second % ASTEROID_T2_SPAWN_PERIOD == 0: 
             for i in range(hard_lvl):
-                asteroids.append(Asteroid(2, window_size))
-                asteroids.append(Asteroid(2, window_size))                           
+                asteroids.append(Asteroid(2, window_size, asteroid_image))
+                asteroids.append(Asteroid(2, window_size, asteroid_image))                           
             spawn_asteroid = False                  
-
-    screen.fill(BLACK)     
+    
+    # Drawing ----------------------------------------------------- #    
+    screen.fill(BLACK)
     for ast in asteroids:
         ast.draw(screen)
     for las in lasers:
         las.draw(screen)
-    starship.draw(screen)
+    starship.draw(screen)    
 
     # Buttons ----------------------------------------------------- #
     for event in pygame.event.get():
@@ -92,7 +103,7 @@ while running:
     if keys[pygame.K_SPACE]: 
         if spawn_laser: 
             if (msecond % LASER_SPAWN_PERIOD == 0):            
-                laser = Laser(starship.x, starship.y, starship.angle)
+                laser = Laser(starship.x, starship.y, starship.angle, laser_image)
                 laser.mx = math.sin(math.radians(laser.angle)) * -1 * LASER_FLYING_SPEED
                 laser.my = math.cos(math.radians(laser.angle)) * -1 * LASER_FLYING_SPEED  
                 lasers.append(laser)
@@ -116,8 +127,8 @@ while running:
         for ast in asteroids:
             if las.collide(ast.mask, ast.x, ast.y) != None:
                 if ast.tier > 1:
-                    asteroids.append(Asteroid(ast.tier - 1, window_size, ast.x, ast.y))
-                    asteroids.append(Asteroid(ast.tier - 1, window_size, ast.x, ast.y))
+                    asteroids.append(Asteroid(ast.tier - 1, window_size, asteroid_image, ast.x, ast.y))
+                    asteroids.append(Asteroid(ast.tier - 1, window_size, asteroid_image, ast.x, ast.y))
                 asteroids.remove(ast)
                 if las in lasers:
                     lasers.remove(las)

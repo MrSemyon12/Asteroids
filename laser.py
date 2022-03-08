@@ -1,10 +1,9 @@
 import pygame
 from constants import *
 
-
 class Laser:
-    def __init__(self, x, y, angle):        
-        self.image = pygame.image.load('data/laser.png')        
+    def __init__(self, x, y, angle, image):        
+        self.image = image        
         self.x = x
         self.y = y   
         self.mx = 0 

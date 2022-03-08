@@ -2,12 +2,8 @@ import pygame, random
 from constants import *
 
 
-image = [pygame.image.load('data/asteroid_t1.png'),
-         pygame.image.load('data/asteroid_t2.png'),
-         pygame.image.load('data/asteroid_t3.png')]
-
 class Asteroid:
-    def __init__(self, tier, window_size, x = 0, y = 0):
+    def __init__(self, tier, window_size, image, x = 0, y = 0):
         self.tier = tier
         self.image = image[tier - 1]
         self.mask = pygame.mask.from_surface(self.image)

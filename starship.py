@@ -3,8 +3,8 @@ from constants import *
 
 
 class Starship:
-    def __init__(self, window_size):        
-        self.image = [pygame.image.load('data/starship.png'), pygame.image.load('data/starship_running.png')]          
+    def __init__(self, window_size, image):        
+        self.image = image      
         self.runnig = 0
         self.x = window_size[0] // 2
         self.y = window_size[1] // 2         
