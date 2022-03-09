@@ -1,7 +1,8 @@
-import pygame, time, math, random
+import pygame, time, math, random, sys
 from starship import Starship
 from asteroid import Asteroid
 from laser import Laser
+from fps import FPS
 from constants import *
 
 # Setup ----------------------------------------------------------- #
@@ -12,6 +13,7 @@ window_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
 flags = pygame.FULLSCREEN | pygame.DOUBLEBUF
 screen = pygame.display.set_mode(window_size, flags, 8)
 pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
+fps = FPS()
 
 # Images ---------------------------------------------------------- #
 asteroid_image = [pygame.image.load('data/asteroid_t1.png').convert_alpha(),
@@ -39,7 +41,7 @@ runningMenu = 1
 # Menu loop ------------------------------------------------------- #
 while runningMenu:
     current_time = time.time()
-    dt = (current_time - last_time) * FPS
+    dt = (current_time - last_time) * 60
     last_time = current_time
     
     mouseX, mouseY = pygame.mouse.get_pos() 
@@ -51,14 +53,19 @@ while runningMenu:
      
     screen.blit(logo_image, (window_size[0] // 2 - logo_image.get_width() // 2, window_size[1] // 2 - logo_image.get_height() // 2 + math.sin(current_time * 5) * 10 - 25))
     screen.blit(playbutton_image, (window_size[0] // 2 - playbutton_image.get_width() // 2, window_size[1] // 2 - playbutton_image.get_height() // 2 + 110))
-    
+    fps.draw(screen)
+    fps.clock.tick(60)
+
     for event in pygame.event.get():
-        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+        if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:            
             pygame.quit()
+            sys.exit()
         if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             clicked = 1
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
+            clicked = 2
             
-    if clicked and (mouseX - window_size[0] // 2) ** 2 + (mouseY - (window_size[1] // 2 + 110)) ** 2 < 75 ** 2:
+    if clicked == 1 and (mouseX - window_size[0] // 2) ** 2 + (mouseY - (window_size[1] // 2 + 110)) ** 2 < 75 ** 2 or clicked == 2:
         runningMenu = 0
 
     for ast in asteroids:
@@ -67,7 +74,7 @@ while runningMenu:
         ast.dangle = ast.mangle * dt        
         ast.update()
 
-    pygame.display.update()    
+    pygame.display.update()        
 
 # Game preset ----------------------------------------------------- #
 starship = Starship(window_size, starship_image)
@@ -85,7 +92,7 @@ runningGame = 1
 # Game loop ------------------------------------------------------- #
 while runningGame:      
     current_time = time.time()
-    dt = (current_time - last_time) * FPS   
+    dt = (current_time - last_time) * 60   
     second = last_time - start_time + 1
     msecond = int(math.modf(second)[0] * 100)
     second = int(second)    
@@ -124,12 +131,14 @@ while runningGame:
         ast.draw(screen)
     for las in lasers:
         las.draw(screen)
-    starship.draw(screen)  
+    starship.draw(screen) 
+    fps.draw(screen)    
     
     # Buttons ----------------------------------------------------- #
     for event in pygame.event.get():
-        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-            runningGame = 0          
+        if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:              
+            pygame.quit()
+            sys.exit()       
         if event.type == pygame.KEYDOWN and event.key == pygame.K_w:
             starship.runnig = 1
         if event.type == pygame.KEYUP and event.key == pygame.K_w:
@@ -183,6 +192,5 @@ while runningGame:
     starship.dy = starship.my * dt
     starship.update()    
     
-    pygame.display.update()    
-
-pygame.quit()
+    pygame.display.update()  
+    fps.clock.tick(60)  
