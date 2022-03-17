@@ -15,7 +15,7 @@ class Starship:
         self.dy = 0
         self.max_x = window_size[0]
         self.max_y = window_size[1]
-        self.health = STARSHIP_BASE_HP        
+        self.health = STARSHIP_HP        
     
     def collide(self, mask, x, y):
         starship_mask = pygame.mask.from_surface(self.image[self.runnig])
