@@ -15,7 +15,8 @@ class Starship:
         self.dy = 0
         self.max_x = window_size[0]
         self.max_y = window_size[1]
-        self.health = STARSHIP_HP        
+        self.health = STARSHIP_HP   
+        self.healthbar_color = (0, 255, 0)     
     
     def collide(self, mask, x, y):
         starship_mask = pygame.mask.from_surface(self.image[self.runnig])
@@ -35,6 +36,13 @@ class Starship:
             self.x = self.max_x
         if (self.y < 0):
             self.y = self.max_y
+        
+        if self.health < STARSHIP_HP // 2:
+            self.healthbar_color = (255, 255, 0)
+        
+        if self.health < STARSHIP_HP // 4:
+            self.healthbar_color = (255, 0, 0)
+
 
     def draw(self, screen):
         img_copy = pygame.transform.rotate(self.image[self.runnig], self.angle)

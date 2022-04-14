@@ -5,13 +5,15 @@ from laser import Laser
 from fps import FPS
 from constants import *
 
+
 # Setup ----------------------------------------------------------- #
 pygame.init()
 pygame.display.set_caption('Asteroids')
 pygame.display.set_icon(pygame.image.load('data/asteroid_t1.png'))
-window_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
-flags = pygame.FULLSCREEN | pygame.DOUBLEBUF
-screen = pygame.display.set_mode(window_size, flags, 8)
+# window_size = (pygame.display.Info().current_w, pygame.display.Info().current_h)
+window_size = (1200, 900)
+flags = pygame.DOUBLEBUF
+screen = pygame.display.set_mode(window_size, flags, 32)
 pygame.event.set_allowed([pygame.QUIT, pygame.KEYDOWN, pygame.KEYUP])
 fps = FPS()
 
@@ -22,10 +24,24 @@ asteroid_image = [pygame.image.load('data/asteroid_t1.png').convert_alpha(),
 starship_image = [pygame.image.load('data/starship.png').convert_alpha(), 
                   pygame.image.load('data/starship_running.png').convert_alpha()]
 laser_image =     pygame.image.load('data/laser.png').convert_alpha()
-logo_image = pygame.transform.scale(pygame.image.load('data/logo.png').convert_alpha(), (1200, 400))
-playbutton_image = pygame.image.load('data/playbutton.png').convert_alpha()
+logo_image = pygame.transform.scale(pygame.image.load('data/logo.png').convert_alpha(), (1000, 300))
+playbutton_image = [pygame.image.load('data/playbutton1.png').convert_alpha(), 
+                    pygame.image.load('data/playbutton2.png').convert_alpha()]
 
-# Menu preset ------------------------------------------------------- #
+# Sounds ---------------------------------------------------------- #
+
+sounds = {
+    'background' : pygame.mixer.Sound('data/sfx/background.wav'),
+    'laser' : pygame.mixer.Sound('data/sfx/laser.wav'),
+    'bump' : pygame.mixer.Sound('data/sfx/bump.wav')
+}
+sounds['background'].set_volume(0.1)
+sounds['laser'].set_volume(0.01)
+sounds['bump'].set_volume(0.05)
+
+sounds['background'].play(-1)
+
+# Menu preset ----------------------------------------------------- #
 asteroids = []
 for i in range(10):
     for j in range(3):
@@ -37,6 +53,7 @@ for i in range(10):
     
 last_time = time.time()
 runningMenu = 1
+cursor_on_btn = 0
 
 # Menu loop ------------------------------------------------------- #
 while runningMenu:
@@ -52,7 +69,7 @@ while runningMenu:
         ast.draw(screen)
      
     screen.blit(logo_image, (window_size[0] // 2 - logo_image.get_width() // 2, window_size[1] // 2 - logo_image.get_height() // 2 + math.sin(current_time * 5) * 10 - 25))
-    screen.blit(playbutton_image, (window_size[0] // 2 - playbutton_image.get_width() // 2, window_size[1] // 2 - playbutton_image.get_height() // 2 + 110))
+    screen.blit(playbutton_image[cursor_on_btn], (window_size[0] // 2 - playbutton_image[cursor_on_btn].get_width() // 2, window_size[1] // 2 - playbutton_image[cursor_on_btn].get_height() // 2 + 110))
     fps.draw(screen)
     fps.clock.tick(60)
 
@@ -64,9 +81,15 @@ while runningMenu:
             clicked = 1
         if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
             clicked = 2
+
+    if (mouseX - window_size[0] // 2) ** 2 + (mouseY - (window_size[1] // 2 + 110)) ** 2 < 75 ** 2:
+        cursor_on_btn = 1
+    else:
+        cursor_on_btn = 0
             
-    if clicked == 1 and (mouseX - window_size[0] // 2) ** 2 + (mouseY - (window_size[1] // 2 + 110)) ** 2 < 75 ** 2 or clicked == 2:
+    if clicked == 1 and cursor_on_btn or clicked == 2:
         runningMenu = 0
+        sounds['laser'].play()
 
     for ast in asteroids:
         ast.dx = ast.mx * dt
@@ -81,50 +104,31 @@ starship = Starship(window_size, starship_image)
 asteroids = []
 lasers = []
 last_time = start_time = time.time()
-last_second = 0
-last_msecond = 0
-spawn_asteroid = 1
-spawn_laser = 1
-hard_lvl = 1
-lvl_up = 1
+difficult = 1
 runningGame = 1
+tick = -1
 
 # Game loop ------------------------------------------------------- #
 while runningGame:      
     current_time = time.time()
-    dt = (current_time - last_time) * 60   
-    second = last_time - start_time + 1
-    msecond = int(math.modf(second)[0] * 100)
-    second = int(second)    
-    last_time = current_time    
+    dt = (current_time - last_time) * 60    
+    last_time = current_time  
+    tick = (tick + 1) % (DIFFICULT_PERIOD + 1) 
 
-    if last_second != second:
-        spawn_asteroid = 1
-        last_second = second 
+    print(starship.health)           
 
-    if last_msecond != msecond:
-        spawn_laser = 1
-        last_msecond = msecond   
-
-    if second % HARD_LVL_UP_PERIOD == 0:
-        if lvl_up:
-            hard_lvl += 1
-            lvl_up = 0
-    else: lvl_up = 1
-    
-    if spawn_asteroid:
-        if second % ASTEROID_T3_SPAWN_PERIOD == 0:  
-            for i in range(hard_lvl):          
-                asteroids.append(Asteroid(3, window_size, asteroid_image))
-                asteroids.append(Asteroid(3, window_size, asteroid_image))
-                asteroids.append(Asteroid(3, window_size, asteroid_image))                
-            spawn_asteroid = 0
-        elif second % ASTEROID_T2_SPAWN_PERIOD == 0: 
-            for i in range(hard_lvl):
-                asteroids.append(Asteroid(2, window_size, asteroid_image))
-                asteroids.append(Asteroid(2, window_size, asteroid_image))                           
-            spawn_asteroid = 0                  
-    
+    if tick % DIFFICULT_PERIOD == 0:
+        difficult += 1    
+        
+    if tick % ASTEROID_SPAWN_PERIOD == 0:  
+        for i in range(difficult):          
+            asteroids.append(Asteroid(3, window_size, asteroid_image))
+            asteroids.append(Asteroid(3, window_size, asteroid_image))
+            asteroids.append(Asteroid(2, window_size, asteroid_image))
+            asteroids.append(Asteroid(2, window_size, asteroid_image))
+            asteroids.append(Asteroid(2, window_size, asteroid_image))
+            asteroids.append(Asteroid(2, window_size, asteroid_image))                    
+                         
     # Drawing ----------------------------------------------------- #    
     screen.fill(BLACK)
     for ast in asteroids:
@@ -155,14 +159,13 @@ while runningGame:
     if keys[pygame.K_a]:
         starship.angle += STARSHIP_ROTATING_SPEED * dt
         starship.angle %= 360
-    if keys[pygame.K_SPACE]: 
-        if spawn_laser: 
-            if (msecond % LASER_SPAWN_PERIOD == 0):            
-                laser = Laser(starship.x, starship.y, starship.angle, laser_image)
-                laser.mx = math.sin(math.radians(laser.angle)) * -1 * LASER_FLYING_SPEED
-                laser.my = math.cos(math.radians(laser.angle)) * -1 * LASER_FLYING_SPEED  
-                lasers.append(laser)
-                spawn_laser = 0            
+    if keys[pygame.K_SPACE]:          
+        if (tick % LASER_SPAWN_PERIOD == 0):            
+            laser = Laser(starship.x, starship.y, starship.angle, laser_image)
+            laser.mx = math.sin(math.radians(laser.angle)) * -1 * LASER_FLYING_SPEED
+            laser.my = math.cos(math.radians(laser.angle)) * -1 * LASER_FLYING_SPEED  
+            lasers.append(laser)
+            sounds['laser'].play()                       
             
     # Update and collide ------------------------------------------ #  
     for ast in asteroids:
@@ -171,7 +174,9 @@ while runningGame:
         ast.dangle = ast.mangle * dt        
         ast.update()
         if starship.collide(ast.mask, ast.x, ast.y) != None:            
-            starship.health -= 1        
+            starship.health -= ASTEROID_DAMAGE
+            pygame.draw.rect(screen, starship.healthbar_color, pygame.Rect(starship.x - 20, starship.y - 20, starship.health / 100, 5))   
+            sounds['bump'].play()     
 
     for las in lasers:
         las.dx = las.mx * dt
