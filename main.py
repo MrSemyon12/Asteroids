@@ -113,9 +113,7 @@ while runningGame:
     current_time = time.time()
     dt = (current_time - last_time) * 60    
     last_time = current_time  
-    tick = (tick + 1) % (DIFFICULT_PERIOD + 1) 
-
-    print(starship.health)           
+    tick = (tick + 1) % (DIFFICULT_PERIOD + 1)        
 
     if tick % DIFFICULT_PERIOD == 0:
         difficult += 1    
@@ -174,7 +172,12 @@ while runningGame:
         ast.dangle = ast.mangle * dt        
         ast.update()
         if starship.collide(ast.mask, ast.x, ast.y) != None:            
-            starship.health -= ASTEROID_DAMAGE
+            starship.health -= ASTEROID_DAMAGE            
+            if starship.health < STARSHIP_HP // 2:
+                starship.healthbar_color = (255, 255, 0)        
+            if starship.health < STARSHIP_HP // 4:
+                starship.healthbar_color = (255, 0, 0)
+
             pygame.draw.rect(screen, starship.healthbar_color, pygame.Rect(starship.x - 20, starship.y - 20, starship.health / 100, 5))   
             sounds['bump'].play()     
 

@@ -35,15 +35,8 @@ class Starship:
         if (self.x < 0):
             self.x = self.max_x
         if (self.y < 0):
-            self.y = self.max_y
+            self.y = self.max_y      
         
-        if self.health < STARSHIP_HP // 2:
-            self.healthbar_color = (255, 255, 0)
-        
-        if self.health < STARSHIP_HP // 4:
-            self.healthbar_color = (255, 0, 0)
-
-
     def draw(self, screen):
         img_copy = pygame.transform.rotate(self.image[self.runnig], self.angle)
         screen.blit(img_copy, (self.x - int(img_copy.get_width() / 2), self.y - int(img_copy.get_height() / 2)))   
