@@ -6,8 +6,7 @@ class Asteroid:
     def __init__(self, tier, window_size, image, x = 0, y = 0):
         self.tier = tier
         self.image = image[tier - 1]
-        self.mask = pygame.mask.from_surface(self.image)
-        self.hp = 1
+        self.mask = pygame.mask.from_surface(self.image)        
         self.mangle = random.uniform(-ASTEROID_ROTATING_SPEED, ASTEROID_ROTATING_SPEED) / tier
         self.mx = random.uniform(-ASTEROID_FLYING_SPEED, ASTEROID_FLYING_SPEED) / tier
         self.my = random.uniform(-ASTEROID_FLYING_SPEED, ASTEROID_FLYING_SPEED) / tier
