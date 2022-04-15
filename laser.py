@@ -11,6 +11,7 @@ class Laser:
         self.angle = angle        
         self.dx = 0
         self.dy = 0
+        self.hp = 1
 
     def collide(self, mask, x, y):
         laser_mask = pygame.mask.from_surface(self.image)

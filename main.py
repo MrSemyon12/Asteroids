@@ -29,7 +29,6 @@ playbutton_image = [pygame.image.load('data/playbutton1.png').convert_alpha(),
                     pygame.image.load('data/playbutton2.png').convert_alpha()]
 
 # Sounds ---------------------------------------------------------- #
-
 sounds = {
     'background' : pygame.mixer.Sound('data/sfx/background.wav'),
     'laser' : pygame.mixer.Sound('data/sfx/laser.wav'),
@@ -38,7 +37,6 @@ sounds = {
 sounds['background'].set_volume(0.1)
 sounds['laser'].set_volume(0.01)
 sounds['bump'].set_volume(0.05)
-
 sounds['background'].play(-1)
 
 # Menu preset ----------------------------------------------------- #
@@ -104,7 +102,7 @@ starship = Starship(window_size, starship_image)
 asteroids = []
 lasers = []
 last_time = start_time = time.time()
-difficult = 1
+difficult = 0
 runningGame = 1
 tick = -1
 
@@ -126,8 +124,8 @@ while runningGame:
             asteroids.append(Asteroid(2, window_size, asteroid_image))
             asteroids.append(Asteroid(2, window_size, asteroid_image))
             asteroids.append(Asteroid(2, window_size, asteroid_image))                    
-                         
-    # Drawing ----------------------------------------------------- #    
+    
+    # Drawing ----------------------------------------------------- #   
     screen.fill(BLACK)
     for ast in asteroids:
         ast.draw(screen)
@@ -180,22 +178,24 @@ while runningGame:
 
             pygame.draw.rect(screen, starship.healthbar_color, pygame.Rect(starship.x - 20, starship.y - 20, starship.health / 100, 5))   
             sounds['bump'].play()     
-
-    for las in lasers:
+    
+    for las in reversed(lasers):
         las.dx = las.mx * dt
         las.dy = las.my * dt 
-        las.update()
-        if (las.x > window_size[0] + 100 or las.x < -100 or las.y > window_size[1] + 100 or las.y < -100):
-            lasers.remove(las) 
-        for ast in asteroids:
+        las.update()        
+        if las.x > window_size[0] + 100 or las.x < -100 or las.y > window_size[1] + 100 or las.y < -100:
+            lasers.remove(las)
+    
+    for las in reversed(lasers):        
+        for ast in reversed(asteroids):            
             if las.collide(ast.mask, ast.x, ast.y) != None:
                 if ast.tier > 1:
                     asteroids.append(Asteroid(ast.tier - 1, window_size, asteroid_image, ast.x, ast.y))
-                    asteroids.append(Asteroid(ast.tier - 1, window_size, asteroid_image, ast.x, ast.y))
+                    asteroids.append(Asteroid(ast.tier - 1, window_size, asteroid_image, ast.x, ast.y))                     
                 asteroids.remove(ast)
-                if las in lasers:
-                    lasers.remove(las)
-
+                lasers.remove(las)
+                break        
+    
     starship.dx = starship.mx * dt
     starship.dy = starship.my * dt
     starship.update()    
